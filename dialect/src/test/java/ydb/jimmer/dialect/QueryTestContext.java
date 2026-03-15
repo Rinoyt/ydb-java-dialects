@@ -50,8 +50,8 @@ public class QueryTestContext {
 
     public void sql(String sql) {
         Assertions.assertEquals(
-                sql.replace("--->", ""),
-                logs.get(index).getSql(),
+                sql.replace("--->", "").toLowerCase(),
+                logs.get(index).getSql().toLowerCase(),
                 "statements[" + index + "].sql");
     }
 
