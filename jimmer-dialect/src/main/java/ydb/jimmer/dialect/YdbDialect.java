@@ -113,7 +113,7 @@ public class YdbDialect extends DefaultDialect {
                     .enter(AbstractSqlBuilder.ScopeType.MULTIPLE_LINE_TUPLE)
                     .appendInsertedColumns("")
                     .leave()
-                    .sql("VALUES ")
+                    .sql(" VALUES")
                     .enter(AbstractSqlBuilder.ScopeType.MULTIPLE_LINE_TUPLE)
                     .appendInsertingValues()
                     .leave();
@@ -123,7 +123,7 @@ public class YdbDialect extends DefaultDialect {
                     .enter(AbstractSqlBuilder.ScopeType.MULTIPLE_LINE_TUPLE)
                     .appendInsertedColumns("")
                     .leave()
-                    .sql("VALUES ")
+                    .sql(" VALUES")
                     .enter(AbstractSqlBuilder.ScopeType.MULTIPLE_LINE_TUPLE)
                     .appendInsertingValues()
                     .leave();
