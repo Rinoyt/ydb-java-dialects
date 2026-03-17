@@ -56,21 +56,30 @@ public class QueryTestContext {
     }
 
     public void variables(Object ... values) {
+        batchVariables(0, values);
+        batches(1);
+    }
+
+    public void batches(int batchCount) {
+        Assertions.assertEquals(batchCount, logs.get(index).getVariablesList().size());
+    }
+
+    public void batchVariables(int batchIndex, Object ... values) {
         Assertions.assertEquals(
                 values.length,
-                logs.get(index).getVariablesList().get(0).size(),
+                logs.get(index).getVariablesList().get(batchIndex).size(),
                 "statements[" + index + "].variables.size is error, actual variables: " +
-                        logs.get(index).getVariablesList().get(0)
+                        logs.get(index).getVariablesList().get(batchIndex)
         );
         for (int i = 0; i < values.length; i++) {
             Object expect = values[i];
 
-            Object actual = logs.get(index).getVariablesList().get(0).get(i);
+            Object actual = logs.get(index).getVariablesList().get(batchIndex).get(i);
 
             Assertions.assertEquals(
                     expect,
                     actual,
-                    "statements[" + index + "].variables[" + i + "] is error, " +
+                    "statements[" + index + "].batch[" + batchIndex + "].variables[" + i + "] is error, " +
                             "expected variables: " +
                             Arrays.toString(values) +
                             ", actual variables: " +

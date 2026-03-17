@@ -22,15 +22,26 @@ public abstract class AbstractTest {
 
     protected static final ExecutorMonitor executor = new ExecutorMonitor();
     private static final JSqlClient yqlClient;
+    private static final JSqlClient yqlClientForBatch;
 
     static {
         yqlClient = YqlClientBuilder.getBuilder()
                 .setExecutor(executor)
                 .build();
+
+        yqlClientForBatch = YqlClientBuilder.getBuilder()
+                .setExecutor(executor)
+                .setExplicitBatchEnabled(true)
+                .setDumbBatchAcceptable(true)
+                .build();
     }
 
     protected JSqlClient getYqlClient() {
         return yqlClient;
+    }
+
+    protected JSqlClient getYqlClientForBatch() {
+        return yqlClientForBatch;
     }
 
     protected void initDatabase() {
@@ -67,7 +78,7 @@ public abstract class AbstractTest {
                 "*/");
     }
 
-    protected String getJdbcURL() {
+    protected static String getJdbcURL() {
         StringBuilder jdbc = new StringBuilder("jdbc:ydb:")
                 .append(ydb.useTls() ? "grpcs://" : "grpc://")
                 .append(ydb.endpoint())
@@ -81,7 +92,7 @@ public abstract class AbstractTest {
         return jdbc.toString();
     }
 
-    protected void createTable(String tableName, String typeName) {
+    protected static void createTable(String tableName, String typeName) {
         executeSql(
                 "CREATE TABLE " + tableName + "(" +
                         "id Int8," +
@@ -90,7 +101,7 @@ public abstract class AbstractTest {
                         ")");
     }
 
-    protected void executeSql(String sql) {
+    protected static void executeSql(String sql) {
         try (Connection connection = DriverManager.getConnection(getJdbcURL())) {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute(sql);

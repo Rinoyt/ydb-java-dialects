@@ -31,7 +31,16 @@ public class ExecutorMonitor implements Executor {
             @NotNull ExecutionPurpose purpose,
             @NotNull JSqlClientImplementor sqlClient
     ) {
-        return executor.executeBatch(con, sql, generatedIdProp, purpose, sqlClient);
+        return new BatchExecutorMonitor(
+                queryLogs,
+                DefaultExecutor.INSTANCE.executeBatch(
+                        con,
+                        sql,
+                        generatedIdProp,
+                        purpose,
+                        sqlClient
+                )
+        );
     }
 
     public List<QueryLog> getLogs() {
