@@ -36,20 +36,6 @@ import ydb.jimmer.dialect.model.type.ydbUtf8.YdbStringTable;
 import ydb.jimmer.dialect.model.type.ydbUuid.YdbUuidTable;
 
 public class SelectDataTypeTest extends AbstractSelectTest {
-    private void insert(String tableName, String... values) {
-        if (values.length == 0) {
-            return;
-        }
-        StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (id, value) VALUES ");
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                sql.append(", ");
-            }
-            sql.append("(").append(i).append(", ").append(values[i]).append(")");
-        }
-        executeSql(sql.toString());
-    }
-
     private void typeTest(String tableName,
                           String typeName,
                           AbstractTypedTable<?> table,
@@ -60,16 +46,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         insert(tableName, valuesToInsert);
 
-        StringBuilder json = new StringBuilder("[");
-        for (int i  = 0; i < valuesToInsert.length; i++) {
-            if (json.length() != 1) {
-                json.append(",");
-            }
-            json.append("{");
-            json.append("\"id\":").append(i).append(",\"value\":").append(expectedValues[i]);
-            json.append("}");
-        }
-        json.append("]");
+        String json = buildJsonResponse(valuesToInsert, expectedValues);
 
         if (expectedValues.length == 1) {
             executeAndExpect(
@@ -79,7 +56,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
                     cxt -> {
                         cxt.sql(
                                 "select tb_1_.id, tb_1_.value from " + tableName + " tb_1_");
-                        cxt.rows(json.toString());
+                        cxt.rows(json);
                     }
             );
         } else {
@@ -91,7 +68,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
                     cxt -> {
                         cxt.sql(
                                 "select tb_1_.id, tb_1_.value from " + tableName + " tb_1_ order by tb_1_.value asc");
-                        cxt.rows(json.toString());
+                        cxt.rows(json);
                     }
             );
         }
