@@ -25,11 +25,13 @@ public abstract class AbstractTest {
     private static final JSqlClient yqlClientForBatch;
 
     static {
-        yqlClient = YqlClientBuilder.getBuilder()
+        yqlClient = JSqlClient.newBuilder()
+                .setDialect(new YdbDialect())
                 .setExecutor(executor)
                 .build();
 
-        yqlClientForBatch = YqlClientBuilder.getBuilder()
+        yqlClientForBatch = JSqlClient.newBuilder()
+                .setDialect(new YdbDialect())
                 .setExecutor(executor)
                 .setExplicitBatchEnabled(true)
                 .setDumbBatchAcceptable(true)
