@@ -2,6 +2,7 @@ package ydb.jimmer.dialect.transaction;
 
 import org.babyfish.jimmer.sql.di.AbstractJSqlClientDelegate;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
+import ydb.jimmer.dialect.constant.YdbConst;
 
 import java.sql.Connection;
 import java.util.function.Supplier;
@@ -27,11 +28,23 @@ public class IsolationLevelEnabledSqlClient extends AbstractJSqlClientDelegate {
         }
     }
 
-    public <R> R withSnapshotIsolation(Supplier<R> block) {
-        return withIsolation(Connection.TRANSACTION_REPEATABLE_READ, block);
+    public <R> R serializableReadWrite(Supplier<R> block) {
+        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, block);
     }
 
-    public <R> R withReadCommitted(Supplier<R> block) {
-        return withIsolation(Connection.TRANSACTION_READ_COMMITTED, block);
+    public <R> R snapshotReadOnly(Supplier<R> block) {
+        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, block);
+    }
+
+    public <R> R staleReadOnly(Supplier<R> block) {
+        return withIsolation(YdbConst.STALE_READ_ONLY, block);
+    }
+
+    public <R> R onlineConsistentReadOnly(Supplier<R> block) {
+        return withIsolation(YdbConst.ONLINE_CONSISTENT_READ_ONLY, block);
+    }
+
+    public <R> R onlineInconsistentReadOnly(Supplier<R> block) {
+        return withIsolation(YdbConst.ONLINE_INCONSISTENT_READ_ONLY, block);
     }
 }
