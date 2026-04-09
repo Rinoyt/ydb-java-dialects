@@ -27,6 +27,7 @@ public class YdbTxConnectionManager extends AbstractTxConnectionManager {
             if (settings.isolationLevel != Connection.TRANSACTION_NONE) {
                 con.setTransactionIsolation(settings.isolationLevel);
             }
+            con.setReadOnly(settings.readOnly);
         }
     }
 }

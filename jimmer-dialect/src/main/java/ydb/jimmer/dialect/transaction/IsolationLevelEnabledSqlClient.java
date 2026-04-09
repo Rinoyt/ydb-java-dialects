@@ -19,9 +19,9 @@ public class IsolationLevelEnabledSqlClient extends AbstractJSqlClientDelegate {
         return delegate;
     }
 
-    public <R> R withIsolation(int isolationLevel, Supplier<R> block) {
+    public <R> R withIsolation(int isolationLevel, boolean readOnly, Supplier<R> block) {
         try {
-            TransactionContext.setSettings(isolationLevel);
+            TransactionContext.setSettings(isolationLevel, readOnly);
             return transaction(block);
         } finally {
             TransactionContext.clear();
@@ -29,22 +29,22 @@ public class IsolationLevelEnabledSqlClient extends AbstractJSqlClientDelegate {
     }
 
     public <R> R serializableReadWrite(Supplier<R> block) {
-        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, block);
+        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, false, block);
     }
 
     public <R> R snapshotReadOnly(Supplier<R> block) {
-        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, block);
+        return withIsolation(Connection.TRANSACTION_SERIALIZABLE, true, block);
     }
 
     public <R> R staleReadOnly(Supplier<R> block) {
-        return withIsolation(YdbConst.STALE_READ_ONLY, block);
+        return withIsolation(YdbConst.STALE_READ_ONLY, true, block);
     }
 
     public <R> R onlineConsistentReadOnly(Supplier<R> block) {
-        return withIsolation(YdbConst.ONLINE_CONSISTENT_READ_ONLY, block);
+        return withIsolation(YdbConst.ONLINE_CONSISTENT_READ_ONLY, true, block);
     }
 
     public <R> R onlineInconsistentReadOnly(Supplier<R> block) {
-        return withIsolation(YdbConst.ONLINE_INCONSISTENT_READ_ONLY, block);
+        return withIsolation(YdbConst.ONLINE_INCONSISTENT_READ_ONLY, true, block);
     }
 }
