@@ -2,9 +2,7 @@ package ydb.jimmer.dialect;
 
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import ydb.jimmer.dialect.scalar.DurationProvider;
-import ydb.jimmer.dialect.scalar.InstantProvider;
-import ydb.jimmer.dialect.transaction.IsolationLevelEnabledSqlClient;
+import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
 import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
 import javax.sql.DataSource;
@@ -16,7 +14,7 @@ public final class YqlClientBuilder {
     public static JSqlClient getYqlClient(
             DataSource dataSource,
             Function<JSqlClient.Builder, JSqlClient.Builder> block) {
-        return new IsolationLevelEnabledSqlClient((JSqlClientImplementor) buildSqlClient(dataSource, block).build());
+        return new IsolationEnabledSqlClient((JSqlClientImplementor) buildSqlClient(dataSource, block).build());
     }
 
     private static JSqlClient.Builder buildSqlClient(
@@ -34,8 +32,6 @@ public final class YqlClientBuilder {
     }
 
     public static JSqlClient.Builder addScalarProviders(JSqlClient.Builder builder) {
-        return builder
-                .addScalarProvider(new InstantProvider())
-                .addScalarProvider(new DurationProvider());
+        return builder;
     }
 }

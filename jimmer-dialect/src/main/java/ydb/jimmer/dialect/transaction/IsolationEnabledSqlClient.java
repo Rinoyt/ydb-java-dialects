@@ -7,10 +7,10 @@ import ydb.jimmer.dialect.constant.YdbConst;
 import java.sql.Connection;
 import java.util.function.Supplier;
 
-public class IsolationLevelEnabledSqlClient extends AbstractJSqlClientDelegate {
+public class IsolationEnabledSqlClient extends AbstractJSqlClientDelegate {
     private final JSqlClientImplementor delegate;
 
-    public IsolationLevelEnabledSqlClient(JSqlClientImplementor delegate) {
+    public IsolationEnabledSqlClient(JSqlClientImplementor delegate) {
         this.delegate = delegate;
     }
 
