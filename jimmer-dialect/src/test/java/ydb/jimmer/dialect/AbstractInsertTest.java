@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
-public class AbstractInsertTest extends AbstractTest {
+public abstract class AbstractInsertTest extends AbstractTest {
     protected void executeAndExpect(Executable<? extends MutationResult> query, Consumer<QueryTestContext> block) {
         MutationResult result = null;
         Throwable throwable = null;
