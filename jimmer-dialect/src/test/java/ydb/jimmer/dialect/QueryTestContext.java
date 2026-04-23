@@ -98,4 +98,16 @@ public class QueryTestContext {
             throw new RuntimeException(e);
         }
     }
+
+    public void error(String message) {
+        if (throwable == null && message == null) {
+            return;
+        }
+
+        if (throwable == null) {
+            Assertions.fail("The query didn't produce an exception: " + message);
+        }
+
+        Assertions.assertEquals(message, throwable.getMessage());
+    }
 }
