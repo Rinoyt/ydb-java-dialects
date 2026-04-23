@@ -103,6 +103,11 @@ public abstract class AbstractTest {
                         ")");
     }
 
+    protected static void dropTable(String tableName) {
+        executeSql(
+                "DROP TABLE " + tableName);
+    }
+
     protected static void executeSql(String sql) {
         try (Connection connection = DriverManager.getConnection(getJdbcURL())) {
             try (Statement stmt = connection.createStatement()) {
