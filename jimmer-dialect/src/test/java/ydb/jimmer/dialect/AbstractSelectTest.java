@@ -1,7 +1,6 @@
 package ydb.jimmer.dialect;
 
 import org.babyfish.jimmer.sql.ast.Executable;
-import org.babyfish.jimmer.sql.ast.query.TypedRootQuery;
 import org.junit.jupiter.api.Assertions;
 
 import java.sql.Connection;
@@ -11,12 +10,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class AbstractSelectTest extends AbstractTest {
-    protected <R> void executeAndExpect(Executable<? extends List<R>> query, Consumer<QueryTestContext> block) {
+    protected static <R> void executeAndExpect(Executable<? extends List<R>> query, Consumer<QueryTestContext> block) {
         List<R> rows = connectAndExecute(true, query);
         block.accept(new QueryTestContext(executor.getLogs(), rows));
     }
 
-    private <R> List<R> connectAndExecute(boolean rollback, Executable<? extends List<R>> query) {
+    private static <R> List<R> connectAndExecute(boolean rollback, Executable<? extends List<R>> query) {
         try (Connection connection = DriverManager.getConnection(getJdbcURL())) {
             connection.setAutoCommit(!rollback);
             try {
@@ -33,7 +32,7 @@ public abstract class AbstractSelectTest extends AbstractTest {
         return null;
     }
 
-    protected void insert(String tableName, String... values) {
+    protected static void insert(String tableName, String... values) {
         if (values.length == 0) {
             return;
         }
@@ -47,14 +46,18 @@ public abstract class AbstractSelectTest extends AbstractTest {
         executeSql(sql.toString());
     }
 
-    protected String buildJsonResponse(String[] valuesToInsert, String[] expectedValues) {
+    protected static String buildJsonResponse(String[] expectedValues) {
+        return buildJsonResponse(0, expectedValues);
+    }
+
+    protected static String buildJsonResponse(int startingId, String[] expectedValues) {
         StringBuilder json = new StringBuilder("[");
-        for (int i  = 0; i < valuesToInsert.length; i++) {
+        for (int i  = 0; i < expectedValues.length; i++) {
             if (json.length() != 1) {
                 json.append(",");
             }
             json.append("{");
-            json.append("\"id\":").append(i).append(",\"value\":").append(expectedValues[i]);
+            json.append("\"id\":").append(startingId + i).append(",\"value\":").append(expectedValues[i]);
             json.append("}");
         }
         json.append("]");

@@ -24,7 +24,7 @@ public class StreamingTest extends AbstractSelectTest {
 
         insert(tableName, valuesToInsert);
 
-        String json = buildJsonResponse(valuesToInsert, expectedValues);
+        String json = buildJsonResponse(expectedValues);
 
         executeAndExpect((Connection con) -> {
                     List<Object> responses = new ArrayList<>();

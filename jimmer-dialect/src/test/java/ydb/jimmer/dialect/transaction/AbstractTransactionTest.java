@@ -4,7 +4,6 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.MutationResult;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ydb.jimmer.dialect.AbstractSelectTest;
 import ydb.jimmer.dialect.QueryTestContext;
@@ -42,7 +41,7 @@ public abstract class AbstractTransactionTest extends AbstractSelectTest {
 
         cxt.sql("select tb_1_.id, tb_1_.value from " + tableName + " tb_1_");
 
-        String json = buildJsonResponse(valuesToInsert, expectedValues);
+        String json = buildJsonResponse(expectedValues);
         cxt.rows(json);
 
         dropTable(tableName);

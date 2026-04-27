@@ -46,7 +46,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         insert(tableName, valuesToInsert);
 
-        String json = buildJsonResponse(valuesToInsert, expectedValues);
+        String json = buildJsonResponse(expectedValues);
 
         if (expectedValues.length == 1) {
             executeAndExpect(
