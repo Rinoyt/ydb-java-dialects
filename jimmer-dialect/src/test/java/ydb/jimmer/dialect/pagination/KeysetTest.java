@@ -1,18 +1,12 @@
 package ydb.jimmer.dialect.pagination;
 
-import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ydb.jimmer.dialect.AbstractSelectTest;
 import ydb.jimmer.dialect.QueryTestContext;
 import ydb.jimmer.dialect.YdbKeysetPaginator;
-import ydb.jimmer.dialect.model.YdbInt;
+import ydb.jimmer.dialect.model.Table;
 import ydb.jimmer.dialect.model.YdbIntTable;
-import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
-import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,24 +24,16 @@ public class KeysetTest extends AbstractSelectTest {
         }
     }
 
-    private static final DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
-    protected static final IsolationEnabledSqlClient yqlClient = new IsolationEnabledSqlClient(
-            (JSqlClientImplementor) JSqlClient.newBuilder()
-                    .setConnectionManager(new YdbTxConnectionManager(dataSource))
-                    .setExecutor(executor)
-                    .build()
-    );
-
     @Test
     public void simpleTest() {
         createTable(TABLE_NAME, VALUE_TYPE_NAME);
         insert(TABLE_NAME, VALUES);
 
-        YdbKeysetPaginator paginator = new YdbKeysetPaginator(yqlClient);
+        YdbKeysetPaginator paginator = new YdbKeysetPaginator(getIsolationClient());
 
         YdbIntTable table = YdbIntTable.$;
 
-        YdbKeysetPaginator.Page<YdbInt> page = null;
+        YdbKeysetPaginator.Page<Table> page = null;
         for (int i = 0; i < N; i += LIMIT) {
             List<Object> nextCursor = null;
             if (page != null) {
@@ -59,7 +45,7 @@ public class KeysetTest extends AbstractSelectTest {
                     List.of(table.id()),
                     nextCursor,
                     LIMIT,
-                    item -> List.of(((YdbInt) item).getId()),
+                    item -> List.of(((Table) item).getId()),
                     (q, t) -> {
                         q.orderBy(t.id().asc());
                         return q.select(t);

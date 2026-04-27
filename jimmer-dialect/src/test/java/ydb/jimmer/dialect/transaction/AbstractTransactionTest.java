@@ -1,28 +1,18 @@
 package ydb.jimmer.dialect.transaction;
 
-import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.MutationResult;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
-import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ydb.jimmer.dialect.AbstractSelectTest;
 import ydb.jimmer.dialect.QueryTestContext;
 import ydb.jimmer.dialect.model.transaction.YdbTransaction;
 import ydb.jimmer.dialect.model.transaction.YdbTransactionDraft;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class AbstractTransactionTest extends AbstractSelectTest {
-    private static final DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
-    protected static final IsolationEnabledSqlClient yqlClient = new IsolationEnabledSqlClient(
-            (JSqlClientImplementor) JSqlClient.newBuilder()
-                    .setConnectionManager(new YdbTxConnectionManager(dataSource))
-                    .setExecutor(executor)
-                    .build()
-    );
+    protected static final IsolationEnabledSqlClient yqlClient = getIsolationClient();
 
     protected void readTest(Function<Supplier<List<YdbTransaction>>, List<YdbTransaction>> transaction) {
         String tableName = "ydb_transaction";

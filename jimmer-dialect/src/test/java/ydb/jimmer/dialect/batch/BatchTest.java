@@ -1,6 +1,5 @@
 package ydb.jimmer.dialect.batch;
 
-import org.babyfish.jimmer.sql.TargetTransferMode;
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,7 @@ import ydb.jimmer.dialect.model.type.ydbInt32.YdbIntDraft;
 import java.util.Arrays;
 
 public class BatchTest  extends AbstractInsertTest {
-    private static final String TABLE_NAME = "ydb_int";
+    private static final String TABLE_NAME = "simple_table";
 
     private void batchTest(SaveMode saveMode, String sql) {
         executeAndExpect(

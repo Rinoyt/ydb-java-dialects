@@ -1,6 +1,7 @@
 package ydb.jimmer.dialect;
 
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.core.io.UrlResource;
@@ -11,6 +12,8 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import tech.ydb.test.junit5.YdbHelperExtension;
 import ydb.jimmer.dialect.scalar.DurationProvider;
 import ydb.jimmer.dialect.sqlMonitor.ExecutorMonitor;
+import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
+import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
 import javax.sql.DataSource;
 import java.net.URL;
@@ -26,6 +29,7 @@ public abstract class AbstractTest {
     protected static final ExecutorMonitor executor = new ExecutorMonitor();
     private static final JSqlClient yqlClient;
     private static final JSqlClient yqlClientForBatch;
+    protected static final IsolationEnabledSqlClient isolationClient;
 
     static {
         yqlClient = JSqlClient.newBuilder()
@@ -40,14 +44,26 @@ public abstract class AbstractTest {
                 .setExplicitBatchEnabled(true)
                 .setDumbBatchAcceptable(true)
                 .build();
+
+        DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
+        isolationClient = new IsolationEnabledSqlClient(
+                (JSqlClientImplementor) JSqlClient.newBuilder()
+                        .setConnectionManager(new YdbTxConnectionManager(dataSource))
+                        .setExecutor(executor)
+                        .build()
+        );
     }
 
-    protected JSqlClient getYqlClient() {
+    protected static JSqlClient getYqlClient() {
         return yqlClient;
     }
 
-    protected JSqlClient getYqlClientForBatch() {
+    protected static JSqlClient getYqlClientForBatch() {
         return yqlClientForBatch;
+    }
+
+    protected static IsolationEnabledSqlClient getIsolationClient() {
+        return isolationClient;
     }
 
     protected void initDatabase() {
