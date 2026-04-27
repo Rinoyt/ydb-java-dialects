@@ -1,8 +1,6 @@
 package ydb.jimmer.dialect.dataTypeTest;
 
-import org.babyfish.jimmer.sql.ast.Executable;
 import org.babyfish.jimmer.sql.ast.PropExpression;
-import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.babyfish.jimmer.sql.ast.table.spi.AbstractTypedTable;
 import org.junit.jupiter.api.Test;
 import ydb.jimmer.dialect.AbstractSelectTest;

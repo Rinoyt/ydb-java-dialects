@@ -29,7 +29,6 @@ public abstract class AbstractTest {
     protected static final ExecutorMonitor executor = new ExecutorMonitor();
     private static final JSqlClient yqlClient;
     private static final JSqlClient yqlClientForBatch;
-    protected static final IsolationEnabledSqlClient isolationClient;
 
     static {
         yqlClient = JSqlClient.newBuilder()
@@ -44,14 +43,6 @@ public abstract class AbstractTest {
                 .setExplicitBatchEnabled(true)
                 .setDumbBatchAcceptable(true)
                 .build();
-
-        DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
-        isolationClient = new IsolationEnabledSqlClient(
-                (JSqlClientImplementor) JSqlClient.newBuilder()
-                        .setConnectionManager(new YdbTxConnectionManager(dataSource))
-                        .setExecutor(executor)
-                        .build()
-        );
     }
 
     protected static JSqlClient getYqlClient() {
@@ -63,7 +54,12 @@ public abstract class AbstractTest {
     }
 
     protected static IsolationEnabledSqlClient getIsolationClient() {
-        return isolationClient;
+        DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
+        return new IsolationEnabledSqlClient(
+                (JSqlClientImplementor) JSqlClient.newBuilder()
+                        .setConnectionManager(new YdbTxConnectionManager(dataSource))
+                        .setExecutor(executor)
+                        .build());
     }
 
     protected void initDatabase() {

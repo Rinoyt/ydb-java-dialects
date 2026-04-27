@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import ydb.jimmer.dialect.AbstractSelectTest;
 import ydb.jimmer.dialect.QueryTestContext;
 import ydb.jimmer.dialect.YdbKeysetPaginator;
-import ydb.jimmer.dialect.model.Table;
-import ydb.jimmer.dialect.model.YdbIntTable;
+import ydb.jimmer.dialect.model.Entity;
+import ydb.jimmer.dialect.model.EntityTable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +31,9 @@ public class KeysetTest extends AbstractSelectTest {
 
         YdbKeysetPaginator paginator = new YdbKeysetPaginator(getIsolationClient());
 
-        YdbIntTable table = YdbIntTable.$;
+        EntityTable table = EntityTable.$;
 
-        YdbKeysetPaginator.Page<Table> page = null;
+        YdbKeysetPaginator.Page<Entity> page = null;
         for (int i = 0; i < N; i += LIMIT) {
             List<Object> nextCursor = null;
             if (page != null) {
@@ -45,7 +45,7 @@ public class KeysetTest extends AbstractSelectTest {
                     List.of(table.id()),
                     nextCursor,
                     LIMIT,
-                    item -> List.of(((Table) item).getId()),
+                    item -> List.of(((Entity) item).getId()),
                     (q, t) -> {
                         q.orderBy(t.id().asc());
                         return q.select(t);
