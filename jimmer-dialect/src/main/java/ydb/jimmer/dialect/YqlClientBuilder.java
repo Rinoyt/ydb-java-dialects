@@ -2,6 +2,7 @@ package ydb.jimmer.dialect;
 
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
+import ydb.jimmer.dialect.scalar.DurationProvider;
 import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
 import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
@@ -32,6 +33,7 @@ public final class YqlClientBuilder {
     }
 
     public static JSqlClient.Builder addScalarProviders(JSqlClient.Builder builder) {
-        return builder;
+        return builder
+                .addScalarProvider(new DurationProvider());
     }
 }

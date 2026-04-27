@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.EncodedResource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ScriptException;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import tech.ydb.test.junit5.YdbHelperExtension;
+import ydb.jimmer.dialect.scalar.DurationProvider;
 import ydb.jimmer.dialect.sqlMonitor.ExecutorMonitor;
 
+import javax.sql.DataSource;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,6 +31,7 @@ public abstract class AbstractTest {
         yqlClient = JSqlClient.newBuilder()
                 .setDialect(new YdbDialect())
                 .setExecutor(executor)
+                .addScalarProvider(new DurationProvider())
                 .build();
 
         yqlClientForBatch = JSqlClient.newBuilder()

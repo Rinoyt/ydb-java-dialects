@@ -1,6 +1,8 @@
 package ydb.jimmer.dialect.dataTypeTest;
 
+import org.babyfish.jimmer.sql.ast.Executable;
 import org.babyfish.jimmer.sql.ast.PropExpression;
+import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.babyfish.jimmer.sql.ast.table.spi.AbstractTypedTable;
 import org.junit.jupiter.api.Test;
 import ydb.jimmer.dialect.AbstractSelectTest;
@@ -34,6 +36,8 @@ import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbTimestampTable;
 import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbUtilDateTable;
 import ydb.jimmer.dialect.model.type.ydbUtf8.YdbStringTable;
 import ydb.jimmer.dialect.model.type.ydbUuid.YdbUuidTable;
+
+import java.util.List;
 
 public class SelectDataTypeTest extends AbstractSelectTest {
     private void typeTest(String tableName,
@@ -72,6 +76,8 @@ public class SelectDataTypeTest extends AbstractSelectTest {
                     }
             );
         }
+
+        dropTable(tableName);
     }
 
     @Test
