@@ -60,7 +60,6 @@ public class RetryConnectionManager implements TxConnectionManager {
     @Override
     public <R> R execute(@Nullable Connection con, Function<Connection, R> block) {
         if (con != null) {
-            // No connection management, no transaction management, everything is controlled by user.
             return block.apply(con);
         }
 

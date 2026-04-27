@@ -148,21 +148,39 @@ public class YdbDialect extends DefaultDialect {
     }
 
     @Override
-    public void renderLPad(AbstractSqlBuilder<?> builder, int currentPrecedence, Ast expression, Ast length, Ast padString) {
+    public void renderLPad(
+            AbstractSqlBuilder<?> builder,
+            int currentPrecedence,
+            Ast expression,
+            Ast length,
+            Ast padString
+    ) {
         throw new UnsupportedOperationException(
                 "The current dialect \"" + getClass().getName() + "\" does not support LPad."
         );
     }
 
     @Override
-    public void renderRPad(AbstractSqlBuilder<?> builder, int currentPrecedence, Ast expression, Ast length, Ast padString) {
+    public void renderRPad(
+            AbstractSqlBuilder<?> builder,
+            int currentPrecedence,
+            Ast expression,
+            Ast length,
+            Ast padString
+    ) {
         throw new UnsupportedOperationException(
                 "The current dialect \"" + getClass().getName() + "\" does not support RPad."
         );
     }
 
     @Override
-    public void renderPosition(AbstractSqlBuilder<?> builder, int currentPrecedence, Ast subStrAst, Ast expressionAst, @Nullable Ast startAst) {
+    public void renderPosition(
+            AbstractSqlBuilder<?> builder,
+            int currentPrecedence,
+            Ast subStrAst,
+            Ast expressionAst,
+            @Nullable Ast startAst
+    ) {
         builder.sql("FIND(")
                 .ast(expressionAst, currentPrecedence)
                 .sql(", ")
@@ -175,12 +193,22 @@ public class YdbDialect extends DefaultDialect {
     }
 
     @Override
-    public void renderLeft(AbstractSqlBuilder<?> builder, int currentPrecedence, Ast expressionAst, Ast lengthAst) {
+    public void renderLeft(
+            AbstractSqlBuilder<?> builder,
+            int currentPrecedence,
+            Ast expressionAst,
+            Ast lengthAst
+    ) {
         renderSubString(builder, currentPrecedence, expressionAst, (Ast) Literals.number(0), lengthAst);
     }
 
     @Override
-    public void renderRight(AbstractSqlBuilder<?> builder, int currentPrecedence, Ast expressionAst, Ast lengthAst) {
+    public void renderRight(
+            AbstractSqlBuilder<?> builder,
+            int currentPrecedence,
+            Ast expressionAst,
+            Ast lengthAst
+    ) {
         builder.sql("substring(")
                 .ast(expressionAst, currentPrecedence)
                 .sql(", (LENGTH(")
