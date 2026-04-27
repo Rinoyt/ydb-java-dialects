@@ -35,8 +35,6 @@ import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbUtilDateTable;
 import ydb.jimmer.dialect.model.type.ydbUtf8.YdbStringTable;
 import ydb.jimmer.dialect.model.type.ydbUuid.YdbUuidTable;
 
-import java.util.List;
-
 public class SelectDataTypeTest extends AbstractSelectTest {
     private void typeTest(String tableName,
                           String typeName,
@@ -50,258 +48,241 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         String json = buildJsonResponse(expectedValues);
 
-        if (expectedValues.length == 1) {
-            executeAndExpect(
-                    getYqlClient()
-                            .createQuery(table)
-                            .select(table),
-                    cxt -> {
-                        cxt.sql(
-                                "select tb_1_.id, tb_1_.value from " + tableName + " tb_1_");
-                        cxt.rows(json);
-                    }
-            );
-        } else {
-            executeAndExpect(
-                    getYqlClient()
-                            .createQuery(table)
-                            .orderBy(prop)
-                            .select(table),
-                    cxt -> {
-                        cxt.sql(
-                                "select tb_1_.id, tb_1_.value from " + tableName + " tb_1_ order by tb_1_.value asc");
-                        cxt.rows(json);
-                    }
-            );
+        var query = getYqlClient().createQuery(table);
+        StringBuilder sql = new StringBuilder("select tb_1_.id, tb_1_.value from " + tableName + " tb_1_");
+        if (expectedValues.length > 1) {
+            query = query.orderBy(prop);
+            sql.append(" order by tb_1_.value asc");
         }
+
+        executeAndExpect(
+                query.select(table),
+                cxt -> {
+                    cxt.sql(sql.toString());
+                    cxt.rows(json);
+                }
+        );
 
         dropTable(tableName);
     }
 
     @Test
     public void boolTest() {
-        String[] valuesToInsert = new String[]{"false", "true"};
-        String[] expectedValues = new String[]{"false", "true"};
+        String[] values = new String[]{"false", "true"};
 
         typeTest("ydb_boolean", "Bool",
                 YdbBooleanTable.$, YdbBooleanTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_boolean_class", "Bool",
                 YdbBooleanClassTable.$, YdbBooleanClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void date32Test() {
-        String[] valuesToInsert = new String[]{"Date32(\"144169-01-01\")"};
+        String[] values = new String[]{"Date32(\"144169-01-01\")"};
         String[] expectedValues = new String[]{"\"4169-01-01\""};
 
         typeTest("ydb_date", "Date32",
                 YdbDateTable.$, YdbDateTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
         expectedValues = new String[]{"\"+144169-01-01\""};
 
         typeTest("ydb_local_date", "Date32",
                 YdbLocalDateTable.$, YdbLocalDateTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void dateTime64Test() {
-        String[] valuesToInsert = new String[]{"DateTime64(\"2017-11-27T13:24:00Z\")"};
+        String[] values = new String[]{"DateTime64(\"2017-11-27T13:24:00Z\")"};
         String[] expectedValues = new String[]{"\"2017-11-27T13:24:00\""};
 
         typeTest("ydb_local_date_time", "DateTime64",
                 YdbLocalDateTimeTable.$, YdbLocalDateTimeTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void decimalTest() {
-        String[] valuesToInsert = new String[]{"Decimal(\"1.23\", 22, 9)"};
+        String[] values = new String[]{"Decimal(\"1.23\", 22, 9)"};
         String[] expectedValues = new String[]{"1.230000000"};
 
         typeTest("ydb_big_decimal", "Decimal(22, 9)",
                 YdbBigDecimalTable.$, YdbBigDecimalTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void doubleTest() {
-        String[] valuesToInsert = new String[]{"Double(\"1.23\")"};
+        String[] values = new String[]{"Double(\"1.23\")"};
         String[] expectedValues = new String[]{"1.23"};
 
         typeTest("ydb_double", "Double",
                 YdbDoubleTable.$, YdbDoubleTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
         typeTest("ydb_double_class", "Double",
                 YdbDoubleClassTable.$, YdbDoubleClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void enumTest() {
-        String[] valuesToInsert = new String[]{"\"ONE\"", "\"TWO\""};
-        String[] expectedValues = new String[]{"\"ONE\"", "\"TWO\""};
+        String[] values = new String[]{"\"ONE\"", "\"TWO\""};
 
         typeTest("ydb_enum", "Utf8",
                 YdbEnumTable.$, YdbEnumTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void floatTest() {
-        String[] valuesToInsert = new String[]{"Float(\"1.23\")"};
+        String[] values = new String[]{"Float(\"1.23\")"};
         String[] expectedValues = new String[]{"1.23"};
 
         typeTest("ydb_float", "Float",
                 YdbFloatTable.$, YdbFloatTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
         typeTest("ydb_float_class", "Float",
                 YdbFloatClassTable.$, YdbFloatClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void int8Test() {
-        String[] valuesToInsert = new String[]{"-1", "0", "10"};
-        String[] expectedValues = new String[]{"-1", "0", "10"};
+        String[] values = new String[]{"-1", "0", "10"};
 
         typeTest("ydb_byte", "Int8",
                 YdbByteTable.$, YdbByteTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_byte_class", "Int8",
                 YdbByteClassTable.$, YdbByteClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void int16Test() {
-        String[] valuesToInsert = new String[]{"-1", "0", "10"};
-        String[] expectedValues = new String[]{"-1", "0", "10"};
+        String[] values = new String[]{"-1", "0", "10"};
 
         typeTest("ydb_short", "Int16",
                 YdbShortTable.$, YdbShortTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_short_class", "Int16",
                 YdbShortClassTable.$, YdbShortClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void int32Test() {
-        String[] valuesToInsert = new String[]{"-1", "0", "10"};
-        String[] expectedValues = new String[]{"-1", "0", "10"};
+        String[] values = new String[]{"-1", "0", "10"};
 
         typeTest("ydb_int", "Int32",
                 YdbIntTable.$, YdbIntTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_integer", "Int32",
                 YdbIntegerTable.$, YdbIntegerTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
-        expectedValues = new String[]{"\"02:59:59.999\"", "\"03:00:00\"", "\"03:00:00.01\""};
+        String[] expectedValues = new String[]{"\"02:59:59.999\"", "\"03:00:00\"", "\"03:00:00.01\""};
 
         typeTest("ydb_local_time", "Int32",
                 YdbLocalTimeTable.$, YdbLocalTimeTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
-        valuesToInsert = new String[]{"0", "10"};
+        values = new String[]{"0", "10"};
         expectedValues = new String[]{"\"00:00:00\"", "\"00:00:10\""};
 
         typeTest("ydb_time", "Int32",
                 YdbTimeTable.$, YdbTimeTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void int64Test() {
-        String[] valuesToInsert = new String[]{"-1", "0", "10"};
-        String[] expectedValues = new String[]{"-1", "0", "10"};
+        String[] values = new String[]{"-1", "0", "10"};
 
         typeTest("ydb_big_integer", "Int64",
                 YdbBigIntegerTable.$, YdbBigIntegerTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_long", "Int64",
                 YdbLongTable.$, YdbLongTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
 
         typeTest("ydb_long_class", "Int64",
                 YdbLongClassTable.$, YdbLongClassTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void interval64Test() {
-        String[] valuesToInsert = new String[]{"Interval(\"P0DT0H0M0.567890S\")"};
+        String[] values = new String[]{"Interval(\"P0DT0H0M0.567890S\")"};
         String[] expectedValues = new String[]{"0.567890000"};
 
         typeTest("ydb_duration", "Interval64",
                 YdbDurationTable.$, YdbDurationTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void jsonTest() {
-        String[] valuesToInsert = new String[]{"Json(@@{\"a\":1,\"b\":null}@@)"};
+        String[] values = new String[]{"Json(@@{\"a\":1,\"b\":null}@@)"};
         String[] expectedValues = new String[]{"{\"a\":1,\"b\":null}"};
 
         typeTest("ydb_json", "Json",
                 YdbJsonTable.$, YdbJsonTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void stringTest() {
-        String[] valuesToInsert = new String[]{"\"0\"", "\"string\""};
+        String[] values = new String[]{"\"0\"", "\"string\""};
         String[] expectedValues = new String[]{"\"MA==\"", "\"c3RyaW5n\""};
 
         typeTest("ydb_byte_array", "String",
                 YdbByteArrayTable.$, YdbByteArrayTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void timestamp64Test() {
-        String[] valuesToInsert = new String[]{"Timestamp64(\"2017-11-27T13:24:00.123456Z\")"};
+        String[] values = new String[]{"Timestamp64(\"2017-11-27T13:24:00.123456Z\")"};
         String[] expectedValues = new String[]{"\"2017-11-27T13:24:00.123456Z\""};
 
         typeTest("ydb_instant", "Timestamp64",
                 YdbInstantTable.$, YdbInstantTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
         expectedValues = new String[]{"\"2017-11-27\""};
 
         typeTest("ydb_timestamp", "Timestamp64",
                 YdbTimestampTable.$, YdbTimestampTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
 
         typeTest("ydb_util_date", "Timestamp64",
                 YdbUtilDateTable.$, YdbUtilDateTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 
     @Test
     public void utf8Test() {
-        String[] valuesToInsert = new String[]{"\"0\"", "\"string\""};
-        String[] expectedValues = new String[]{"\"0\"", "\"string\""};
+        String[] values = new String[]{"\"0\"", "\"string\""};
 
         typeTest("ydb_string", "Utf8",
                 YdbStringTable.$, YdbStringTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, values);
     }
 
     @Test
     public void uuidTest() {
-        String[] valuesToInsert = new String[]{
+        String[] values = new String[]{
                 "Uuid(\"9e197d65-1914-4d57-a65f-77a52a06baa7\")",
                 "Uuid(\"8e0f2cf4-4656-4d73-970e-a18be9ead78b\")"};
         String[] expectedValues = new String[]{
@@ -310,6 +291,6 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_uuid", "Uuid",
                 YdbUuidTable.$, YdbUuidTable.$.value(),
-                valuesToInsert, expectedValues);
+                values, expectedValues);
     }
 }
