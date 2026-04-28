@@ -63,6 +63,8 @@ public class InsertDataTypeTest extends AbstractInsertTest {
                     cxt.variables(variables);
                 }
         );
+
+        dropTable(tableName);
     }
 
     @Test
