@@ -55,7 +55,7 @@ public class QueryTestContext {
                 "statements[" + index + "].sql");
     }
 
-    public void variables(Object ... values) {
+    public void variables(Object... values) {
         batchVariables(0, values);
         batches(1);
     }
@@ -64,7 +64,7 @@ public class QueryTestContext {
         Assertions.assertEquals(batchCount, logs.get(index).getVariablesList().size());
     }
 
-    public void batchVariables(int batchIndex, Object ... values) {
+    public void batchVariables(int batchIndex, Object... values) {
         Assertions.assertEquals(
                 values.length,
                 logs.get(index).getVariablesList().get(batchIndex).size(),
