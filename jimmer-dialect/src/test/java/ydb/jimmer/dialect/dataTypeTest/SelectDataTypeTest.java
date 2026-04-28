@@ -40,6 +40,14 @@ public class SelectDataTypeTest extends AbstractSelectTest {
                           String typeName,
                           AbstractTypedTable<?> table,
                           PropExpression<?> prop,
+                          String[] values) {
+        typeTest(tableName, typeName, table, prop, values, values);
+    }
+
+    private void typeTest(String tableName,
+                          String typeName,
+                          AbstractTypedTable<?> table,
+                          PropExpression<?> prop,
                           String[] valuesToInsert,
                           String[] expectedValues) {
         createTable(tableName, typeName);
@@ -72,11 +80,11 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_boolean", "Bool",
                 YdbBooleanTable.$, YdbBooleanTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_boolean_class", "Bool",
                 YdbBooleanClassTable.$, YdbBooleanClassTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
@@ -135,7 +143,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_enum", "Utf8",
                 YdbEnumTable.$, YdbEnumTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
@@ -158,11 +166,11 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_byte", "Int8",
                 YdbByteTable.$, YdbByteTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_byte_class", "Int8",
                 YdbByteClassTable.$, YdbByteClassTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
@@ -171,11 +179,11 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_short", "Int16",
                 YdbShortTable.$, YdbShortTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_short_class", "Int16",
                 YdbShortClassTable.$, YdbShortClassTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
@@ -184,11 +192,11 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_int", "Int32",
                 YdbIntTable.$, YdbIntTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_integer", "Int32",
                 YdbIntegerTable.$, YdbIntegerTable.$.value(),
-                values, values);
+                values);
 
         String[] expectedValues = new String[]{"\"02:59:59.999\"", "\"03:00:00\"", "\"03:00:00.01\""};
 
@@ -210,15 +218,15 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_big_integer", "Int64",
                 YdbBigIntegerTable.$, YdbBigIntegerTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_long", "Int64",
                 YdbLongTable.$, YdbLongTable.$.value(),
-                values, values);
+                values);
 
         typeTest("ydb_long_class", "Int64",
                 YdbLongClassTable.$, YdbLongClassTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
@@ -277,7 +285,7 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_string", "Utf8",
                 YdbStringTable.$, YdbStringTable.$.value(),
-                values, values);
+                values);
     }
 
     @Test
