@@ -44,6 +44,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 public class InsertDataTypeTest extends AbstractInsertTest {
@@ -65,6 +66,10 @@ public class InsertDataTypeTest extends AbstractInsertTest {
         dropTable(tableName);
     }
 
+    /**
+     * {@link org.babyfish.jimmer.sql.ast.impl.Variables#handleDateTime(Object, ZoneId) handleDateTime(Object, ZoneId)}
+     * this Jimmer method is responsible for changing java types without any user input
+     */
     @Test
     public void handleDateTimeJimmerTest() {
         Object[] variables = new Object[]{0, Instant.now()};
