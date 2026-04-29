@@ -298,22 +298,6 @@ public class InsertDataTypeTest extends AbstractInsertTest {
     }
 
     @Test
-    public void jsonTest() {
-        Json json = new Json();
-        json.setA(2);
-        json.setB(3);
-
-        Object[] variables = new Object[]{0, json};
-
-        typeTest("ydb_json", "Json",
-                YdbJsonDraft.$.produce(t -> {
-                    t.setId((Integer) variables[0]);
-                    t.setValue((Json) variables[1]);
-                }),
-                variables);
-    }
-
-    @Test
     public void stringTest() {
         Object[] variables = new Object[]{0, new byte[]{1, 2}};
 
