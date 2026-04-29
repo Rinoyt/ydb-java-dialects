@@ -66,6 +66,54 @@ public class InsertDataTypeTest extends AbstractInsertTest {
     }
 
     @Test
+    public void handleDateTimeJimmerTest() {
+        Object[] variables = new Object[]{0, Instant.now()};
+
+        typeTest("ydb_instant", "Timestamp64",
+                YdbInstantDraft.$.produce(t -> {
+                    t.setId((Integer) variables[0]);
+                    t.setValue((Instant) variables[1]);
+                }),
+                variables);
+
+        Object[] variables1 = new Object[]{0, LocalDateTime.parse("1970-01-01T00:00:00")};
+
+        typeTest("ydb_local_date_time", "DateTime64",
+                YdbLocalDateTimeDraft.$.produce(t -> {
+                    t.setId((Integer) variables1[0]);
+                    t.setValue((LocalDateTime) variables1[1]);
+                }),
+                variables1);
+
+        Object[] variables2 = new Object[]{0, LocalDate.parse("1970-01-01")};
+
+        typeTest("ydb_local_date", "Date32",
+                YdbLocalDateDraft.$.produce(t -> {
+                    t.setId((Integer) variables2[0]);
+                    t.setValue((LocalDate) variables2[1]);
+                }),
+                variables2);
+
+        Object[] variables3 = new Object[]{0, LocalTime.parse("10:15")};
+
+        typeTest("ydb_local_time", "Int32",
+                YdbLocalTimeDraft.$.produce(t -> {
+                    t.setId((Integer) variables3[0]);
+                    t.setValue((LocalTime) variables3[1]);
+                }),
+                variables3);
+
+        Object[] variables4 = new Object[]{0, new java.util.Date(0)};
+
+        typeTest("ydb_util_date", "Timestamp64",
+                YdbUtilDateDraft.$.produce(t -> {
+                    t.setId((Integer) variables4[0]);
+                    t.setValue((java.util.Date) variables4[1]);
+                }),
+                variables4);
+    }
+
+    @Test
     public void boolTest() {
         Object[] variables = new Object[]{0, true};
 
@@ -95,27 +143,6 @@ public class InsertDataTypeTest extends AbstractInsertTest {
                     t.setValue((Date) variables1[1]);
                 }),
                 variables1);
-
-        Object[] variables2 = new Object[]{0, LocalDate.parse("1970-01-01")};
-
-        typeTest("ydb_local_date", "Date32",
-                YdbLocalDateDraft.$.produce(t -> {
-                    t.setId((Integer) variables2[0]);
-                    t.setValue((LocalDate) variables2[1]);
-                }),
-                variables2);
-    }
-
-    @Test
-    public void dateTime64Test() {
-        Object[] variables = new Object[]{0, LocalDateTime.parse("1970-01-01T00:00:00")};
-
-        typeTest("ydb_local_date_time", "DateTime64",
-                YdbLocalDateTimeDraft.$.produce(t -> {
-                    t.setId((Integer) variables[0]);
-                    t.setValue((LocalDateTime) variables[1]);
-                }),
-                variables);
     }
 
     @Test
@@ -236,15 +263,6 @@ public class InsertDataTypeTest extends AbstractInsertTest {
                 }),
                 variables);
 
-        Object[] variables1 = new Object[]{0, LocalTime.parse("10:15")};
-
-        typeTest("ydb_local_time", "Int32",
-                YdbLocalTimeDraft.$.produce(t -> {
-                    t.setId((Integer) variables1[0]);
-                    t.setValue((LocalTime) variables1[1]);
-                }),
-                variables1);
-
         Object[] variables2 = new Object[]{0, new Time(0)};
 
         typeTest("ydb_time", "Int32",
@@ -309,32 +327,14 @@ public class InsertDataTypeTest extends AbstractInsertTest {
 
     @Test
     public void timestamp64Test() {
-        Object[] variables = new Object[]{0, Instant.now()};
-
-        typeTest("ydb_instant", "Timestamp64",
-                YdbInstantDraft.$.produce(t -> {
-                    t.setId((Integer) variables[0]);
-                    t.setValue((Instant) variables[1]);
-                }),
-                variables);
-
-        Object[] variables1 = new Object[]{0, new Timestamp(0)};
+        Object[] variables = new Object[]{0, new Timestamp(0)};
 
         typeTest("ydb_timestamp", "Timestamp64",
                 YdbTimestampDraft.$.produce(t -> {
-                    t.setId((Integer) variables1[0]);
-                    t.setValue((Timestamp) variables1[1]);
+                    t.setId((Integer) variables[0]);
+                    t.setValue((Timestamp) variables[1]);
                 }),
-                variables1);
-
-        Object[] variables2 = new Object[]{0, new java.util.Date(0)};
-
-        typeTest("ydb_util_date", "Timestamp64",
-                YdbUtilDateDraft.$.produce(t -> {
-                    t.setId((Integer) variables2[0]);
-                    t.setValue((java.util.Date) variables2[1]);
-                }),
-                variables2);
+                variables);
     }
 
     @Test
