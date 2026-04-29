@@ -27,8 +27,6 @@ import ydb.jimmer.dialect.model.type.ydbInt64.YdbLongDraft;
 import ydb.jimmer.dialect.model.type.ydbInt8.YdbByteClassDraft;
 import ydb.jimmer.dialect.model.type.ydbInt8.YdbByteDraft;
 import ydb.jimmer.dialect.model.type.ydbInterval64.YdbDurationDraft;
-import ydb.jimmer.dialect.model.type.ydbJson.Json;
-import ydb.jimmer.dialect.model.type.ydbJson.YdbJsonDraft;
 import ydb.jimmer.dialect.model.type.ydbString.YdbByteArrayDraft;
 import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbInstantDraft;
 import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbTimestampDraft;
