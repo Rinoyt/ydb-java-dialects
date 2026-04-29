@@ -12,29 +12,29 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class AbstractTransactionTest extends AbstractSelectTest {
+    private static final String TABLE_NAME = "ydb_transaction";
+    private static final String TYPE_NAME = "Int32";
+
     protected static final IsolationEnabledSqlClient yqlClient = getIsolationClient();
 
     protected void readTest(Function<Supplier<List<YdbTransaction>>, List<YdbTransaction>> transaction) {
-        String tableName = "ydb_transaction";
-        String typeName = "Int32";
-        String[] valuesToInsert = new String[]{"-1", "0", "10"};
-        String[] expectedValues = new String[]{"-1", "0", "10"};
+        String[] values = new String[]{"-1", "0", "10"};
 
-        createTable(tableName, typeName);
+        createTable(TABLE_NAME, TYPE_NAME);
 
-        insert(tableName, valuesToInsert);
+        insert(TABLE_NAME, values);
 
         List<YdbTransaction> rows = transaction.apply(() ->
                 yqlClient.getEntities().findAll(YdbTransaction.class)
         );
         QueryTestContext cxt = new QueryTestContext(executor.getLogs(), rows);
 
-        cxt.sql("select tb_1_.id, tb_1_.value from " + tableName + " tb_1_");
+        cxt.sql("select tb_1_.id, tb_1_.value from " + TABLE_NAME + " tb_1_");
 
-        String json = buildJsonResponse(expectedValues);
+        String json = buildJsonResponse(values);
         cxt.rows(json);
 
-        dropTable(tableName);
+        dropTable(TABLE_NAME);
     }
 
     protected void writeTest(Function<Supplier<MutationResult>, MutationResult> transaction, boolean readOnly) {
@@ -47,11 +47,9 @@ public abstract class AbstractTransactionTest extends AbstractSelectTest {
     }
 
     protected void writeTest(Function<Supplier<MutationResult>, MutationResult> transaction, String errorMessage) {
-        String tableName = "ydb_transaction";
-        String typeName = "Int32";
         Object[] variables = new Object[]{0, 10};
 
-        createTable(tableName, typeName);
+        createTable(TABLE_NAME, TYPE_NAME);
 
         MutationResult result = null;
         Throwable throwable = null;
@@ -69,10 +67,10 @@ public abstract class AbstractTransactionTest extends AbstractSelectTest {
         }
         QueryTestContext cxt = new QueryTestContext(executor.getLogs(), result, throwable);
 
-        cxt.sql("insert into " + tableName + "(id, value) values(?, ?)");
+        cxt.sql("insert into " + TABLE_NAME + "(id, value) values(?, ?)");
         cxt.variables(variables);
         cxt.error(errorMessage);
 
-        dropTable(tableName);
+        dropTable(TABLE_NAME);
     }
 }

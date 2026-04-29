@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.babyfish.jimmer.sql.ast.mutation.MutationResult;
-import org.babyfish.jimmer.sql.collection.TypedList;
 import org.junit.jupiter.api.Assertions;
 import ydb.jimmer.dialect.sqlMonitor.QueryLog;
 

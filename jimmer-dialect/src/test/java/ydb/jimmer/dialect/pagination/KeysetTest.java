@@ -12,7 +12,7 @@ import java.util.List;
 
 public class KeysetTest extends AbstractSelectTest {
     private static final String TABLE_NAME = "simple_table";
-    private static final String VALUE_TYPE_NAME = "Int32";
+    private static final String TYPE_NAME = "Int32";
 
     private static final int N = 100;
     private static final int LIMIT = 20;
@@ -26,7 +26,7 @@ public class KeysetTest extends AbstractSelectTest {
 
     @Test
     public void simpleTest() {
-        createTable(TABLE_NAME, VALUE_TYPE_NAME);
+        createTable(TABLE_NAME, TYPE_NAME);
         insert(TABLE_NAME, VALUES);
 
         YdbKeysetPaginator paginator = new YdbKeysetPaginator(getIsolationClient());

@@ -11,25 +11,18 @@ import java.util.function.Consumer;
 
 public abstract class AbstractSelectTest extends AbstractTest {
     protected static <R> void executeAndExpect(Executable<? extends List<R>> query, Consumer<QueryTestContext> block) {
-        List<R> rows = connectAndExecute(true, query);
-        block.accept(new QueryTestContext(executor.getLogs(), rows));
-    }
-
-    private static <R> List<R> connectAndExecute(boolean rollback, Executable<? extends List<R>> query) {
+        List<R> rows = null;
         try (Connection connection = DriverManager.getConnection(getJdbcURL())) {
-            connection.setAutoCommit(!rollback);
             try {
-                return query.execute(connection);
+                rows = query.execute(connection);
             } finally {
-                if (rollback) {
-                    connection.rollback();
-                }
+                connection.rollback();
             }
         } catch (SQLException e) {
             Assertions.fail("Database threw an exception: " + e.getMessage());
         }
 
-        return null;
+        block.accept(new QueryTestContext(executor.getLogs(), rows));
     }
 
     protected static void insert(String tableName, String... values) {

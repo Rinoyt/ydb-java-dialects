@@ -120,8 +120,7 @@ public abstract class AbstractTest {
     }
 
     protected static void dropTable(String tableName) {
-        executeSql(
-                "DROP TABLE " + tableName);
+        executeSql("DROP TABLE " + tableName);
     }
 
     protected static void executeSql(String sql) {

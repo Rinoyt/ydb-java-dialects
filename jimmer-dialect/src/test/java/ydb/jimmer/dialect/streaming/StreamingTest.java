@@ -11,20 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StreamingTest extends AbstractSelectTest {
+    private static final String TABLE_NAME = "ydb_streaming";
+    private static final String TYPE_NAME = "Int32";
+
     @Test
     public void cursorTest() {
-        String tableName =  "ydb_streaming";
-        String typeName =  "Int32";
         AbstractTypedTable<?> table = YdbStreamingTable.$;
         PropExpression<?> prop = YdbStreamingTable.$.value();
-        String[] valuesToInsert = new String[]{"11", "12", "21", "22"};
-        String[] expectedValues = new String[]{"11", "12", "21", "22"};
+        String[] values = new String[]{"11", "12", "21", "22"};
 
-        createTable(tableName, typeName);
+        createTable(TABLE_NAME, TYPE_NAME);
 
-        insert(tableName, valuesToInsert);
+        insert(TABLE_NAME, values);
 
-        String json = buildJsonResponse(expectedValues);
+        String json = buildJsonResponse(values);
 
         executeAndExpect((Connection con) -> {
                     List<Object> responses = new ArrayList<>();
@@ -37,7 +37,7 @@ public class StreamingTest extends AbstractSelectTest {
                 },
                 cxt -> {
                     cxt.sql(
-                            "select tb_1_.id, tb_1_.value from " + tableName + " tb_1_ order by tb_1_.value asc");
+                            "select tb_1_.id, tb_1_.value from " + TABLE_NAME + " tb_1_ order by tb_1_.value asc");
                     cxt.rows(json);
                 }
         );
