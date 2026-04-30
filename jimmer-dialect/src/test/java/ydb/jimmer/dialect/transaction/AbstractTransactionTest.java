@@ -15,7 +15,7 @@ public abstract class AbstractTransactionTest extends AbstractSelectTest {
     private static final String TABLE_NAME = "ydb_transaction";
     private static final String TYPE_NAME = "Int32";
 
-    protected static final IsolationEnabledSqlClient yqlClient = getIsolationClient();
+    protected static final YqlClient yqlClient = getIsolationClient();
 
     protected void readTest(Function<Supplier<List<YdbTransaction>>, List<YdbTransaction>> transaction) {
         String[] values = new String[]{"-1", "0", "10"};

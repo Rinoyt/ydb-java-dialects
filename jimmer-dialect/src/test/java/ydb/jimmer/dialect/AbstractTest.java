@@ -12,7 +12,7 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import tech.ydb.test.junit5.YdbHelperExtension;
 import ydb.jimmer.dialect.scalar.DurationProvider;
 import ydb.jimmer.dialect.sqlMonitor.ExecutorMonitor;
-import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
+import ydb.jimmer.dialect.transaction.YqlClient;
 import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
 import javax.sql.DataSource;
@@ -53,9 +53,9 @@ public abstract class AbstractTest {
         return yqlClientForBatch;
     }
 
-    protected static IsolationEnabledSqlClient getIsolationClient() {
+    protected static YqlClient getIsolationClient() {
         DataSource dataSource = new DriverManagerDataSource(getJdbcURL());
-        return new IsolationEnabledSqlClient(
+        return new YqlClient(
                 (JSqlClientImplementor) JSqlClient.newBuilder()
                         .setConnectionManager(new YdbTxConnectionManager(dataSource))
                         .setExecutor(executor)

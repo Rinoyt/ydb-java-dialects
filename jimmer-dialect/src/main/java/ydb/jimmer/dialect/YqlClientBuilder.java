@@ -3,7 +3,7 @@ package ydb.jimmer.dialect;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
 import ydb.jimmer.dialect.scalar.DurationProvider;
-import ydb.jimmer.dialect.transaction.IsolationEnabledSqlClient;
+import ydb.jimmer.dialect.transaction.YqlClient;
 import ydb.jimmer.dialect.transaction.YdbTxConnectionManager;
 
 import javax.sql.DataSource;
@@ -16,7 +16,7 @@ public final class YqlClientBuilder {
             DataSource dataSource,
             Function<JSqlClient.Builder, JSqlClient.Builder> block
     ) {
-        return new IsolationEnabledSqlClient((JSqlClientImplementor) buildSqlClient(dataSource, block).build());
+        return new YqlClient((JSqlClientImplementor) buildSqlClient(dataSource, block).build());
     }
 
     private static JSqlClient.Builder buildSqlClient(
