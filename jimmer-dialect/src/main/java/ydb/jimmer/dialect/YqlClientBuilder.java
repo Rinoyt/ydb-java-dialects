@@ -12,7 +12,7 @@ import java.util.function.Function;
 public final class YqlClientBuilder {
     private YqlClientBuilder() {}
 
-    public static JSqlClient getYqlClient(
+    public static YqlClient getYqlClient(
             DataSource dataSource,
             Function<JSqlClient.Builder, JSqlClient.Builder> block
     ) {
@@ -30,7 +30,7 @@ public final class YqlClientBuilder {
         ));
     }
 
-    public static JSqlClient getYqlClient(DataSource dataSource) {
+    public static YqlClient getYqlClient(DataSource dataSource) {
         return getYqlClient(dataSource, x -> x);
     }
 
