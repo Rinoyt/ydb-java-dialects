@@ -16,7 +16,8 @@ public class SelectTest extends AbstractSelectTest {
                         .select(table),
                 cxt -> cxt.sql(
                         "select tb_1_.id, tb_1_.name, tb_1_.group " +
-                                "from student tb_1_")
+                                "from student tb_1_"
+                )
         );
     }
 }
