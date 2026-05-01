@@ -9,6 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.hibernate.boot.model.FunctionContributions;
 import org.hibernate.boot.model.TypeContributions;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.spi.SQLExceptionConversionDelegate;
+import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
 import org.hibernate.dialect.pagination.LimitHandler;
 import org.hibernate.dialect.pagination.LimitOffsetLimitHandler;
@@ -22,6 +25,7 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.sql.ast.SqlAstTranslatorFactory;
 import org.hibernate.sql.ast.spi.SqlAppender;
 import org.hibernate.tool.schema.spi.Exporter;
+import static org.hibernate.internal.util.JdbcExceptionHelper.extractErrorCode;
 import static org.hibernate.type.SqlTypes.BIGINT;
 import static org.hibernate.type.SqlTypes.BINARY;
 import static org.hibernate.type.SqlTypes.BIT;
@@ -62,6 +66,7 @@ import org.hibernate.type.descriptor.jdbc.UUIDJdbcType;
 import org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry;
 import org.hibernate.type.descriptor.sql.internal.DdlTypeImpl;
 import org.hibernate.type.descriptor.sql.spi.DdlTypeRegistry;
+import org.hibernate.type.spi.TypeConfiguration;
 import tech.ydb.hibernate.dialect.code.YdbJdbcCode;
 import tech.ydb.hibernate.dialect.exporter.EmptyExporter;
 import tech.ydb.hibernate.dialect.exporter.YdbIndexExporter;
@@ -69,6 +74,9 @@ import tech.ydb.hibernate.dialect.hint.IndexQueryHintHandler;
 import tech.ydb.hibernate.dialect.hint.PragmaQueryHintHandler;
 import tech.ydb.hibernate.dialect.hint.QueryHintHandler;
 import tech.ydb.hibernate.dialect.hint.ScanQueryHintHandler;
+import org.hibernate.query.sqm.produce.function.FunctionParameterType;
+import org.hibernate.query.sqm.produce.function.StandardFunctionArgumentTypeResolvers;
+import org.hibernate.type.StandardBasicTypes;
 import tech.ydb.hibernate.dialect.identity.YdbIdentityColumnSupport;
 import tech.ydb.hibernate.dialect.translator.YdbSqlAstTranslatorFactory;
 import tech.ydb.hibernate.dialect.types.BigDecimalJavaType;
@@ -94,8 +102,20 @@ public class YdbDialect extends Dialect {
     );
     private static final ConcurrentHashMap<Integer, DecimalJdbcType> DECIMAL_JDBC_TYPE_CACHE = new ConcurrentHashMap<>();
 
+    /**
+     * When true, FOR UPDATE / FOR SHARE lock hints are ignored and an empty string is returned.
+     * Configured via {@value tech.ydb.hibernate.dialect.YdbSettings#IGNORE_LOCK_HINTS}.
+     * Default is {@code false} to support backward compatibility
+     */
+    private final boolean ignoreLockHints;
+
     public YdbDialect(DialectResolutionInfo dialectResolutionInfo) {
         super(dialectResolutionInfo);
+        ignoreLockHints = ConfigurationHelper.getBoolean(
+            YdbSettings.IGNORE_LOCK_HINTS,
+            dialectResolutionInfo.getConfigurationValues(),
+            false
+        );
     }
 
     @Override
@@ -238,6 +258,7 @@ public class YdbDialect extends Dialect {
         super.initializeFunctionRegistry(functionContributions);
 
         final SqmFunctionRegistry functionRegistry = functionContributions.getFunctionRegistry();
+        final TypeConfiguration typeConfig = functionContributions.getTypeConfiguration();
 
         functionRegistry.registerPattern(
                 "lower",
@@ -248,6 +269,14 @@ public class YdbDialect extends Dialect {
                 "upper",
                 "Unicode::ToUpper(?1)"
         );
+
+        functionRegistry.patternDescriptorBuilder("concat", "(?1||?2...)")
+                .setInvariantType(typeConfig.getBasicTypeRegistry().resolve(StandardBasicTypes.STRING))
+                .setMinArgumentCount(1)
+                .setArgumentTypeResolver(
+                        StandardFunctionArgumentTypeResolvers.impliedOrInvariant(typeConfig, FunctionParameterType.STRING))
+                .setArgumentListSignature("(STRING string0[, STRING string1[, ...]])")
+                .register();
     }
 
     @Override
@@ -392,6 +421,9 @@ public class YdbDialect extends Dialect {
 
     @Override
     public String getForUpdateString() {
+        if (ignoreLockHints) {
+            return "";
+        }
         throw new UnsupportedOperationException("YDB does not support FOR UPDATE statement");
     }
 
@@ -416,6 +448,11 @@ public class YdbDialect extends Dialect {
     }
 
     @Override
+    public boolean supportsOrdinalSelectItemReference() {
+        return false;
+    }
+
+    @Override
     public boolean supportsColumnCheck() {
         return false;
     }
@@ -433,6 +470,26 @@ public class YdbDialect extends Dialect {
     @Override
     public boolean supportsInsertReturningGeneratedKeys() {
         return true;
+    }
+
+    @Override
+    public void appendLiteral(SqlAppender appender, String literal) {
+        super.appendLiteral(appender, literal);
+        appender.append('u');
+    }
+
+    @Override
+    public SQLExceptionConversionDelegate buildSQLExceptionConversionDelegate() {
+        return (sqlException, message, sql) -> {
+            String msg = sqlException.getMessage();
+
+            return switch (extractErrorCode(sqlException)) {
+                case 400120 -> msg != null && msg.contains("Conflict with existing key")
+                        ? new ConstraintViolationException(message, sqlException, sql, ConstraintViolationException.ConstraintKind.UNIQUE, null)
+                        : null;
+                default -> null;
+            };
+        };
     }
 
     private static int ydbDecimal(int precision, int scale) {
