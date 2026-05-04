@@ -1,5 +1,9 @@
 package ydb.jimmer.dialect.transaction;
 
+/**
+ * This class is used to pass transaction setting
+ * to the ConnectionManager.
+ */
 public class TransactionContext {
     private static final ThreadLocal<TransactionSettings> LOCAL_CONTEXT = new ThreadLocal<>();
 

@@ -6,6 +6,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Sets transaction isolation level and read only mode
+ * to the connection at the start of a transaction.
+ */
 public class YdbTxConnectionManager extends AbstractTxConnectionManager {
     private final DataSource dataSource;
 

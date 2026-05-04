@@ -1,5 +1,6 @@
 package ydb.jimmer.dialect.transaction;
 
+import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.di.AbstractJSqlClientDelegate;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
 import ydb.jimmer.dialect.constant.YdbConst;
@@ -7,6 +8,10 @@ import ydb.jimmer.dialect.constant.YdbConst;
 import java.sql.Connection;
 import java.util.function.Supplier;
 
+/**
+ * Provides methods for setting transaction isolation level
+ * to the {@link JSqlClient}.
+ */
 public class YqlClient extends AbstractJSqlClientDelegate {
     private final JSqlClientImplementor delegate;
 

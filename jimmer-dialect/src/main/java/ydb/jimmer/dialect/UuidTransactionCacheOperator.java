@@ -16,6 +16,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * Uses UUID for the ids in the {@link #TABLE_NAME} SQL table.
+ */
 public class UuidTransactionCacheOperator extends TransactionCacheOperator {
     public static final String TABLE_NAME = "JIMMER_TRANS_CACHE_OPERATOR";
 

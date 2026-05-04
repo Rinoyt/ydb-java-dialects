@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Provides mappings from Java classes
+ * to the YDB and JDBC data types.
+ */
 public final class YdbClassMapping {
     private YdbClassMapping() {}
 

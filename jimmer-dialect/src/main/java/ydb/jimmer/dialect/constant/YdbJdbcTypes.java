@@ -1,5 +1,9 @@
 package ydb.jimmer.dialect.constant;
 
+/**
+ * Contains constants of the SQL types used in the YDB driver.
+ * The values are taken from /tech/ydb/jdbc/common/YdbTypes.java in the YDB driver.
+ */
 public final class YdbJdbcTypes {
     private YdbJdbcTypes() {}
 

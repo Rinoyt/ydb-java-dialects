@@ -7,6 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Passes the given Java type (scalar)
+ * as a new Java type (SQL) without any changes.
+ * This class is used when the given Java type is supported by the JDBC driver,
+ * but is not supported by Jimmer.
+ *
+ * @param <T> the class that needs to pass to the driver without any changes
+ */
 public abstract class DumbYdbScalarProvider<T> extends AbstractScalarProvider<T, T> {
     private final Class<T> clazz;
 
