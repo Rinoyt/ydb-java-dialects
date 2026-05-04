@@ -35,6 +35,8 @@ import ydb.jimmer.dialect.model.type.ydbTimestamp64.YdbUtilDateTable;
 import ydb.jimmer.dialect.model.type.ydbUtf8.YdbStringTable;
 import ydb.jimmer.dialect.model.type.ydbUuid.YdbUuidTable;
 
+import java.time.ZoneId;
+
 public class SelectDataTypeTest extends AbstractSelectTest {
     private void typeTest(String tableName,
                           String typeName,
@@ -74,6 +76,48 @@ public class SelectDataTypeTest extends AbstractSelectTest {
         dropTable(tableName);
     }
 
+    /**
+     * {@link org.babyfish.jimmer.sql.ast.impl.Variables#handleDateTime(Object, ZoneId) handleDateTime(Object, ZoneId)}
+     * this Jimmer method is responsible for changing java types without any user input
+     */
+    @Test
+    public void handleDateTimeJimmerTest() {
+        String[] values = new String[]{"Timestamp64(\"2017-11-27T13:24:00.123456Z\")"};
+        String[] expectedValues = new String[]{"\"2017-11-27T13:24:00.123456Z\""};
+
+        typeTest("ydb_instant", "Timestamp64",
+                YdbInstantTable.$, YdbInstantTable.$.value(),
+                values, expectedValues);
+
+        values = new String[]{"DateTime64(\"2017-11-27T13:24:00Z\")"};
+        expectedValues = new String[]{"\"2017-11-27T13:24:00\""};
+
+        typeTest("ydb_local_date_time", "DateTime64",
+                YdbLocalDateTimeTable.$, YdbLocalDateTimeTable.$.value(),
+                values, expectedValues);
+
+        values = new String[]{"Date32(\"144169-01-01\")"};
+        expectedValues = new String[]{"\"+144169-01-01\""};
+
+        typeTest("ydb_local_date", "Date32",
+                YdbLocalDateTable.$, YdbLocalDateTable.$.value(),
+                values, expectedValues);
+
+        values = new String[]{"-1", "0", "10"};
+        expectedValues = new String[]{"\"02:59:59.999\"", "\"03:00:00\"", "\"03:00:00.01\""};
+
+        typeTest("ydb_local_time", "Int32",
+                YdbLocalTimeTable.$, YdbLocalTimeTable.$.value(),
+                values, expectedValues);
+
+        values = new String[]{"Timestamp64(\"2017-11-27T13:24:00.123456Z\")"};
+        expectedValues = new String[]{"\"2017-11-27\""};
+
+        typeTest("ydb_util_date", "Timestamp64",
+                YdbUtilDateTable.$, YdbUtilDateTable.$.value(),
+                values, expectedValues);
+    }
+
     @Test
     public void boolTest() {
         String[] values = new String[]{"false", "true"};
@@ -94,22 +138,6 @@ public class SelectDataTypeTest extends AbstractSelectTest {
 
         typeTest("ydb_date", "Date32",
                 YdbDateTable.$, YdbDateTable.$.value(),
-                values, expectedValues);
-
-        expectedValues = new String[]{"\"+144169-01-01\""};
-
-        typeTest("ydb_local_date", "Date32",
-                YdbLocalDateTable.$, YdbLocalDateTable.$.value(),
-                values, expectedValues);
-    }
-
-    @Test
-    public void dateTime64Test() {
-        String[] values = new String[]{"DateTime64(\"2017-11-27T13:24:00Z\")"};
-        String[] expectedValues = new String[]{"\"2017-11-27T13:24:00\""};
-
-        typeTest("ydb_local_date_time", "DateTime64",
-                YdbLocalDateTimeTable.$, YdbLocalDateTimeTable.$.value(),
                 values, expectedValues);
     }
 
@@ -198,14 +226,8 @@ public class SelectDataTypeTest extends AbstractSelectTest {
                 YdbIntegerTable.$, YdbIntegerTable.$.value(),
                 values);
 
-        String[] expectedValues = new String[]{"\"02:59:59.999\"", "\"03:00:00\"", "\"03:00:00.01\""};
-
-        typeTest("ydb_local_time", "Int32",
-                YdbLocalTimeTable.$, YdbLocalTimeTable.$.value(),
-                values, expectedValues);
-
         values = new String[]{"0", "10"};
-        expectedValues = new String[]{"\"00:00:00\"", "\"00:00:10\""};
+        String[] expectedValues = new String[]{"\"00:00:00\"", "\"00:00:10\""};
 
         typeTest("ydb_time", "Int32",
                 YdbTimeTable.$, YdbTimeTable.$.value(),
@@ -262,20 +284,10 @@ public class SelectDataTypeTest extends AbstractSelectTest {
     @Test
     public void timestamp64Test() {
         String[] values = new String[]{"Timestamp64(\"2017-11-27T13:24:00.123456Z\")"};
-        String[] expectedValues = new String[]{"\"2017-11-27T13:24:00.123456Z\""};
-
-        typeTest("ydb_instant", "Timestamp64",
-                YdbInstantTable.$, YdbInstantTable.$.value(),
-                values, expectedValues);
-
-        expectedValues = new String[]{"\"2017-11-27\""};
+        String[] expectedValues = new String[]{"\"2017-11-27\""};
 
         typeTest("ydb_timestamp", "Timestamp64",
                 YdbTimestampTable.$, YdbTimestampTable.$.value(),
-                values, expectedValues);
-
-        typeTest("ydb_util_date", "Timestamp64",
-                YdbUtilDateTable.$, YdbUtilDateTable.$.value(),
                 values, expectedValues);
     }
 
