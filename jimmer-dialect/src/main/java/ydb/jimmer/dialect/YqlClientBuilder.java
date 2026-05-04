@@ -27,6 +27,7 @@ public final class YqlClientBuilder {
                 JSqlClient.newBuilder()
                         .setDialect(new YdbDialect())
                         .setConnectionManager(new YdbTxConnectionManager(dataSource))
+                        .setCacheOperator(new UuidTransactionCacheOperator())
         ));
     }
 
